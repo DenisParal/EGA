@@ -25,12 +25,11 @@ public:
     auto get_phenotype(pheno_func&& func)->decltype(func(genstring)) const {
         return func(genstring);
     }
-    void print_genotype() const {
-        std::cout << "[";
-        for (auto x : genstring) {
-            std::cout << x;
-        }
-        std::cout << "] ";
+    auto begin(){
+        return genstring.begin();
+    }
+    auto end(){
+        return genstring.end();
     }
     long int size() const {
         return genstring.size();
@@ -43,25 +42,23 @@ private:
     std::vector<T> genstring;
 };
 
-
-
 template<typename T>
-class population {
+class Container {
 public:
-    population() = default;
+    Container() = default;
     template<typename functor>
-    population(const population& another_population):individuals(another_population.individuals), population_size(another_population.population_size) {}
-    population(population&& another_population) :individuals(std::move(another_population.individuals)), population_size(another_population.population_size) {}
+    Container(const Container& another_population):individuals(another_population.individuals), population_size(another_population.population_size) {}
+    Container(Container&& another_population) :individuals(std::move(another_population.individuals)), population_size(another_population.population_size) {}
     
-    genotype<T>& operator[](int index) const {
+    std::shared_ptr<genotype<T>>& operator[](int index) const {
         return individuals[i];
     }
-    population& operator=(const population& another_population) {
+    Container& operator=(const Container& another_population) {
         population_size = another_population.population_size;
         individuals = another_population.individuals;
         return *this;
     }
-    population& operator=(population&& another_population) {
+    Container& operator=(Container&& another_population) {
         if (&another_field != this) {
             population_size = another_population.population_size;
             individuals = std::move(another_population.individuals);
@@ -72,23 +69,29 @@ public:
     void print_all() const {
         for (int i = 0; i < population_size; i++) {
             std::cout << "Elem (" << i << "): ";
-            individuals[i].print_genotype();
+            print_key(*individuals[i]);
             std::cout <<"\n";
         }
     }
     long int size() const {
         return population_size;
     }
-    void add(genotype<T>& genstring) {
-        individuals.push_back(genstring);
+    void add(const genotype<T>& genstring) {
+        individuals.push_back(std::make_shared<genotype<T>>(genstring));
         ++population_size
+    }
+    void add(genotype<T>&& genstring){
+        individuals.push_back(std::make_shared<genotype<T>>(std::move(genstring)));
+        ++population_size;
     }
     void erase(int index) {
         individuals.erase(individuals.begin() + index);
         --population_size;
     }
     
+    static typename value_type=T;
+
 private:
-    std::vector<genotype<T>> individuals;
+    std::vector<std::shared_ptr<genotype<T>>> individuals;
     long int population_size=0;
 };
