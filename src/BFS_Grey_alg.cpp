@@ -1,5 +1,5 @@
 #include "includes.h"
-#include "BFS_alg.h"
+#include "BFS_with_Grey.h"
 
 int main(){
     srand(time(0));
@@ -17,7 +17,7 @@ int main(){
         std::cout <<" "<< pop.at(i)->adapt();
         std::cout <<"\n";
     }
-    auto val =BFS_algo(pop,[](std::shared_ptr<individual<int>>& key){
+    auto val =BFS_Grey_algo(pop,[](std::shared_ptr<individual<int>>& key){
         return (*key).adapt();
     }, 10);
 }

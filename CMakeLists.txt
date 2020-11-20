@@ -12,7 +12,8 @@ function(build_src SRC_NAME)
 endfunction(build_src)
 
 #build_src(monte_carlo)
-#build_src(DFS_alg)
+build_src(DFS_alg)
 #build_src(BFS_alg)
-build_src(test_utils)
+#build_src(test_utils)
+#build_src(BFS_Grey_alg)
 

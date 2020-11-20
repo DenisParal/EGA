@@ -36,13 +36,11 @@ std::vector<int> parse_func(long int value, long int power, long key_length) {
 template<typename Container>
 long convert(const Container& num, int power) {
     long result=0;
-    for(int i=0;i<num.size();i++){
+    for(int i=num.size()-1;i>=0;i--){
         result+=std::pow(power,i)*num[i];
     }
     return result;
 }
-
-// +ToDO: solve the problem with missing Keys qualifier when it is const&
 
 template<typename Key_type>
 int get_distance(const Key_type& first_key, const Key_type& second_key) {
@@ -51,7 +49,7 @@ int get_distance(const Key_type& first_key, const Key_type& second_key) {
     }
     int result = 0;
     for (int i = 0; i < first_key.size(); i++) {
-        result += (first_key[i] + second_key[i]) % 2;
+        result += (first_key.at(i) + second_key.at(i)) % 2;
     }
     return result;
 }
@@ -78,17 +76,16 @@ void print_algo_result(const std::pair<Key_type,long>& result){
 }
 
 template<typename Container, typename Key_type>
-Container get_neighbours(const Container& pool, Key_type& key) {
+Container get_neighbours(const Container& pool, const Key_type& key) {
     Container result;
     for (int i = 0; i < pool.size(); i++) {
-        if (get_distance(*key, *(pool[i])) == 1) {
-            result.add(pool[i]);
+        if (get_distance(*key, *(pool.at(i))) == 1) {
+            result.add(pool.at(i));
         }
     }
     return result;
 }
 
-//-ToDO
 
 template<typename Container, typename Predicate>
 std::vector<typename Container::value_type> selection(const Container& set, const Predicate& selector){
@@ -117,7 +114,7 @@ Key_type modulo_addition(const Key_type& key1, const Key_type& key2, int mod){
     }
     Key_type result=key1;
     for(int i=0;i<key1.size();i++){
-        result[i]=(key1[i]+key2[i])%mod;
+        result[i]=(key1.at(i)+key2.at(i))%mod;
     }
     return result;
 }
@@ -125,7 +122,6 @@ Key_type modulo_addition(const Key_type& key1, const Key_type& key2, int mod){
 //TODO Doesn't work problem might be in operator% with values<0, investigate it
 template<typename Key_type>
 void shift_loop(Key_type& key, int shift_value){
-    //shift_value%=key.size();
     typename Key_type::value_type tmp=key[0];
     typename Key_type::value_type tmp_swap=0;
     int npos;
@@ -147,7 +143,7 @@ Key_type simpl_shift(const Key_type& key, int shift_value){
             if(i-shift_value>=key.size()){
                 tmp[i]=0;
             }else{
-                tmp[i]=key[i-shift_value];
+                tmp[i]=key.at(i-shift_value);
             }
         }
     }else if(shift_value>0){
@@ -155,7 +151,7 @@ Key_type simpl_shift(const Key_type& key, int shift_value){
             if(i-shift_value<0){
                 tmp[i]=0;
             }else{
-                tmp[i]=key[i-shift_value];
+                tmp[i]=key.at(i-shift_value);
             }
         }
     }
@@ -164,9 +160,8 @@ Key_type simpl_shift(const Key_type& key, int shift_value){
 
 template<typename Key_type>
 Key_type to_Grey(const Key_type& key){
-    Key_type shifted_k=simpl_shift(key,1);
-    Key_type tmp=modulo_addition(key,shifted_k,2);
-    return modulo_addition(key,simpl_shift(key,1),2);
+    Key_type tmp_key=key;
+    return modulo_addition(tmp_key,simpl_shift(tmp_key,1),2);
 }
 
 template<typename Key_type>
@@ -177,3 +172,18 @@ Key_type out_Grey(const Key_type& key){
     }
     return shifted_k;
 }
+
+template<typename Container, typename Key_type>
+Container get_neighbours_on_grey(const Container& pool, const Key_type& key){
+    Container result;
+    auto grey_key=to_Grey(*key);
+    for (int i = 0; i < pool.size(); i++) {
+        if (get_distance(grey_key, to_Grey(*((pool).at(i)))) == 1) {
+            result.add(pool.at(i));
+        }
+    }
+    return result;
+}
+
+template<typename T>
+void print_type(T& t);

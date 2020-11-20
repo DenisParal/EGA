@@ -16,7 +16,7 @@ public:
         adaptation_value=func(this.genotype);
     }
 
-    individual(const individual& another_individual):genotype(another_individual.gentype), adaptation_value(another_individual.adaptation_value){}
+    individual(const individual& another_individual):genotype(another_individual.genotype), adaptation_value(another_individual.adaptation_value){}
     individual(individual&& another_individual):genotype(std::move(another_individual.genotype)), adaptation_value(another_individual.adaptation_value){}
     
     individual& operator=(const individual& another_individual) {
@@ -32,23 +32,26 @@ public:
         }
         return *this;
     }
-    double adapt(){
+    double adapt() const {
         return adaptation_value;
     }
     template<typename Adapt_func>
     void set_adaptation(const Adapt_func& func){
         adaptation_value=func(genotype);
     }
-    auto begin(){
+    auto begin() const {
         return genotype.begin();
     }
-    auto end(){
+    auto end() const {
         return genotype.end();
     }
     long int size() const {
         return genotype.size();
     }
     T& operator[](int index) {
+        return genotype[index];
+    }
+    const T at(int index) const {
         return genotype[index];
     }
     using value_type=T;
@@ -69,7 +72,10 @@ public:
             add(individual(x,func));
         }
     }
-    std::shared_ptr<individual<T>>& operator[](int index){
+    std::shared_ptr<individual<T>>& operator[](int index) {
+        return individuals[index];
+    }
+    const std::shared_ptr<individual<T>>& at(int index) const {
         return individuals[index];
     }
     population& operator=(const population& another_population) {

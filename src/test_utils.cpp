@@ -15,6 +15,4 @@ int main(){
         print_key(result);
         std::cout <<"\n";
     }
-    
-   
 }
