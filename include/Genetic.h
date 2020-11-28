@@ -105,6 +105,18 @@ public:
             std::cout <<" ("<<(*individuals[i]).adapt()<<")\n";
         }
     }
+
+    void print_all_grey() const {
+        for (int i = 0; i < population_size; i++) {
+            std::cout << "Elem (" << i << "): ";
+            print_key(*individuals[i]);
+            std::cout <<" ("<<(*individuals[i]).adapt()<<")";
+            std::cout << " Grey: ";
+            print_key(to_Grey(*(individuals[i])));
+            std::cout <<"\n";
+        }
+    }
+
     long int size() const {
         return population_size;
     }

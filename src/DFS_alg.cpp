@@ -3,6 +3,9 @@
 
 int main(){
     srand(time(0));
+    int number_of_passes;
+    std::cout <<"Enter loop count: ";
+    std::cin >> number_of_passes;
     const long src_size=32;
     population<int> pop;
     

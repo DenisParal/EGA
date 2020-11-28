@@ -37,7 +37,7 @@ template<typename Container>
 long convert(const Container& num, int power) {
     long result=0;
     for(int i=num.size()-1;i>=0;i--){
-        result+=std::pow(power,i)*num[i];
+        result+=std::pow(power,num.size()-1-i)*num[i];
     }
     return result;
 }
@@ -183,6 +183,19 @@ Container get_neighbours_on_grey(const Container& pool, const Key_type& key){
         }
     }
     return result;
+}
+
+template<typename Container, typename Predicate>
+std::size_t optimum(const Container& cont, const Predicate& func){
+    auto opt=cont.at(0);
+    int index=0;
+    for(std::size_t i=0;i<cont.size();i++){
+        if(func(cont.at(i),opt)){
+            index=i;
+            opt=cont.at(i);
+        }
+    }
+    return index;
 }
 
 template<typename T>

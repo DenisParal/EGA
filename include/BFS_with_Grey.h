@@ -6,42 +6,45 @@ std::pair<typename Container::value_type, long int> BFS_Grey_algo(Container& usi
     std::pair<typename Container::value_type, long int> max(using_field[position], func(using_field[position]));
     std::pair<typename Container::value_type, long int> temp_pair=max;
     for (int i = 0; i < N; i++) {
+        std::cout <<"***** STEP "<<i<<" *****\n";
         std::cout << "Current max data: ";
         print_pair(max);
+        std::cout << " Grey: ";
+        print_key(to_Grey(*(max.first)));
         std::cout << "\n";
+
         Container neighbours = get_neighbours_on_grey(using_field,max.first);
+
         if(neighbours.size()==0){
             std::cout << "There are no neighbours\n";
             print_algo_result(max);
             std::cout <<"\n";
             return max;
         }
+
         std::cout << "***Neighbours list:\n";
-        neighbours.print_all();
+        neighbours.print_all_grey();
         std::cout << "******************\n";
-        bool optimized = false;
-        for (int i = 0; i < neighbours.size(); i++) {
-            std::cout << "Current max data: ";
-            print_pair(max);
-            std::cout << " ";
-            print_key(to_Grey(*(max.first)));
-            std::cout << "\n";
-            temp_pair.first=neighbours[i];
-            temp_pair.second=func(neighbours[i]);
-            std::cout << "Iteration data:   ";
-            print_pair(temp_pair);
-            std::cout << " ";
-            print_key(to_Grey(*(temp_pair.first)));
-            std::cout << "\n";
-            if (temp_pair.second > max.second) {
-                max = temp_pair;
-                std::cout << "Optimized";
-                std::cout << "\n\n";
-                optimized = true;
-                break;
-            }
-        }
-        if(!optimized){
+        
+        int opt_i=optimum(neighbours,[&func](const typename Container::value_type& first, const typename Container::value_type& second){
+            return func(first)>func(second);
+        });
+
+        temp_pair.first=neighbours[opt_i];
+        temp_pair.second=func(neighbours[opt_i]);
+
+        std::cout << "Iteration data:   ";
+        print_pair(temp_pair);
+        std::cout << " ";
+        std::cout << "Grey: ";
+        print_key(to_Grey(*(temp_pair.first)));
+        std::cout << "\n";
+
+        if (temp_pair.second > max.second) {
+            max = temp_pair;
+            std::cout << "Optimized";
+            std::cout << "\n\n";
+        }else{
             std::cout << "There are no better individuals in neighbours\n";
             print_algo_result(max);
             std::cout <<"\n";
