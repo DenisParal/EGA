@@ -2,10 +2,10 @@
 #include "includes.h"
 
 template<typename Container, typename Adaptation_func>
-std::pair<typename Container::value_type, long int> BFS_algo(Container& using_field, const Adaptation_func& func, int N) {
+std::pair<typename Container::value_type, long double> BFS_algo(Container& using_field, const Adaptation_func& func, int N) {
     int position = rand() % using_field.size();
-    std::pair<typename Container::value_type, long int> max(using_field[position], func(using_field[position]));
-    std::pair<typename Container::value_type, long int> temp_pair=max;
+    std::pair<typename Container::value_type, long double> max(using_field[position], func(using_field[position]));
+    std::pair<typename Container::value_type, long double> temp_pair=max;
     for (int i = 0; i < N; i++) {
         std::cout <<"***** STEP "<<i<<" *****\n";
         std::cout << "Current max data: ";
@@ -52,4 +52,3 @@ std::pair<typename Container::value_type, long int> BFS_algo(Container& using_fi
     std::cout << "\n";
     return max;
 }
-//TODO: Print nomber of step, rework algorithm, calculate maximum across neighbours first, then max of best and best of neighbours

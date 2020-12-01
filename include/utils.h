@@ -37,7 +37,7 @@ template<typename Container>
 long convert(const Container& num, int power) {
     long result=0;
     for(int i=num.size()-1;i>=0;i--){
-        result+=std::pow(power,num.size()-1-i)*num[i];
+        result+=std::pow(power,num.size()-1-i)*num.at(i);
     }
     return result;
 }
@@ -62,14 +62,14 @@ void print_key(const Key_type& key){
     }
     std::cout <<"]";
 }
-template<typename Key_type>
-void print_pair(const std::pair<Key_type, long>& pair) {
+template<typename Key_type, typename T>
+void print_pair(const std::pair<Key_type, T>& pair) {
     print_key(*(pair.first));
     std::cout << " (" << pair.second << ")";
 }
 
-template<typename Key_type>
-void print_algo_result(const std::pair<Key_type,long>& result){
+template<typename Key_type, typename T>
+void print_algo_result(const std::pair<Key_type, T>& result){
     std::cout << "*****Algorithm result: pair<";
     print_pair(result);
     std::cout << ">*****\n";

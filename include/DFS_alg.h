@@ -2,12 +2,13 @@
 #include "includes.h"
 
 template<typename Container, typename Adaptation_func>
-std::pair<typename Container::value_type, long int> DFS_algo(Container& using_field, const Adaptation_func& func, int N) {
+std::pair<typename Container::value_type, long double> DFS_algo(Container& using_field, const Adaptation_func& func, int N) {
     int position = rand() % using_field.size();
-    std::pair<typename Container::value_type, long int> max(using_field[position], func(using_field[position]));
-    std::pair<typename Container::value_type, long int> temp_pair=max;
+    std::pair<typename Container::value_type, long double> max(using_field[position], func(using_field[position]));
+    std::pair<typename Container::value_type, long double> temp_pair=max;
     Container neighbours = get_neighbours(using_field,max.first);
     for (int i = 0; i < N; i++) {
+        std::cout <<"***** STEP "<<i<<" *****\n";
         std::cout << "Current max data: ";
         print_pair(max);
         std::cout << "\n";

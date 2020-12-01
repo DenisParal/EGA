@@ -57,7 +57,7 @@ public:
     using value_type=T;
 private:
     std::vector<T> genotype;
-    double adaptation_value;
+    long double adaptation_value;
 };
 
 template<typename T>
