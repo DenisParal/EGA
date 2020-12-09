@@ -22,5 +22,5 @@ int main(){
     }
     auto val =DFS_algo(pop,[](std::shared_ptr<individual<int>>& key){
         return (*key).adapt();
-    }, 10);
+    }, 5);
 }

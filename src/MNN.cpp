@@ -49,6 +49,14 @@ void erase_position(std::vector<std::vector<T>>& matr, int pos){
         x=-1;
     }
 }
+template<typename T>
+T path_sum(std::vector<std::vector<T>>& matr, std::vector<int> path){
+    T sum=0;
+    for(int i=0;i<path.size()-1;i++){
+        sum+=matr[path[i]][path[i+1]];
+    }
+    return sum;
+}
 
 int main(){
     srand(time(0));
@@ -58,18 +66,19 @@ int main(){
     fin.open(filename);
     int size;
     fin >> size;
-    std::vector<std::vector<int>> matr(size,std::vector<int>(size));
+    std::vector<std::vector<float>> matr(size,std::vector<float>(size));
     for(int i=0;i<size;i++){
         for(int j=0; j<size; j++){
             fin >> matr[i][j];
         }
     }
+    std::vector<std::vector<float>> distances=matr;
     int start=rand()%size;
     std::cout <<"Algorithm started with " <<start <<"'st point\n";
     std::vector<int> path;
     path.push_back(start);
-    std::vector<int> first_p_dist=matr[start];
-    long sum_distance=0;
+    std::vector<float> first_p_dist=matr[start];
+    float sum_distance=0;
 
     for(int i=1;i<size;i++){
         std::cout <<"***STEP "<<i+1<<" ***\n";
@@ -80,16 +89,16 @@ int main(){
         std::cout <<"\n";
         start=find_min(matr[path[i-1]],path[i-1]);
         std::cout <<"Distance to nearest point ("<<start<<") is "<<matr[path[i-1]][start]<<"\n";
-        sum_distance+=matr[path[i-1]][start];
-        std::cout <<"Summary distance is: "<<sum_distance<<"\n\n";
         path.push_back(start);
+        sum_distance=path_sum(distances,path);
+        std::cout <<"Summary distance is: "<<sum_distance<<"\n\n";
         erase_position(matr,path[i-1]);
     }
     std::cout <<"Final path: ";
+    path.push_back(path[0]);
     for(auto& x:path){
         std::cout <<x <<" ";
     }
     std::cout <<"\n";
-    std::cout <<"Final distance: "<<sum_distance<<"\n";
-    std::cout <<"Final loop distance: "<< sum_distance+first_p_dist[path[size-1]];
+    std::cout <<"Final loop distance: "<< path_sum(distances,path);
 }

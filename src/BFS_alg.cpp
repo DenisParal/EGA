@@ -23,5 +23,5 @@ int main(){
     }
     auto val =BFS_algo(pop,[](const std::shared_ptr<individual<int>>& key){
         return (*key).adapt();
-    }, 10);
+    }, 5);
 }
