@@ -13,8 +13,8 @@ struct item{
     }
 
     int index;
-    int weight;
-    int value;
+    float weight;
+    float value;
 };
 std::ifstream fin;
 
@@ -24,15 +24,15 @@ int main(){
     std::cin >> filename;
     fin.open(filename);
 
-    int max_w;
-    int sum_v=0;
-    int sum_w=0;
+    float max_w;
+    float sum_v=0;
+    float sum_w=0;
     int size;
     fin >> size;
     std::vector<item> store;
     std::vector<int> pack(size,0);
-    int weight;
-    int value;
+    float weight;
+    float value;
     int index;
     for(int i=0;i<size;i++){
         fin >>index >>weight >>value;
@@ -71,7 +71,7 @@ int main(){
     }
 
     int best_pos;
-    int cur_w=0;
+    float cur_w=0;
     sum_w=0;
     for(int i=0;i<size;i++){
         std::cout <<"***STEP "<<i+1<<"***\n";
