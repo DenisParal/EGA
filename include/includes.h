@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <cmath>
 #include <type_traits>
 #include "Genetic.h"
 #include "utils.h"

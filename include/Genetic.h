@@ -10,10 +10,13 @@ class population;
 template<typename T>
 class individual {
 public:
+    individual():genotype(std::vector<T>()),adaptation_value(0){}
+    individual(const std::vector<T>& genotype, long double value):genotype(genotype), adaptation_value(value){}
     template<typename Adapt_func>
     individual(const std::vector<T>& genotype, const Adapt_func& func):genotype(genotype), adaptation_value(func(genotype)){}
-    individual(std::vector<T>&& genotype):genotype(std::move(genotype)){
-        adaptation_value=func(this.genotype);
+    template<typename Adapt_func>
+    individual(std::vector<T>&& genotype, const Adapt_func& func):genotype(std::move(genotype)) {
+        adaptation_value=func(this->genotype);
     }
 
     individual(const individual& another_individual):genotype(another_individual.genotype), adaptation_value(another_individual.adaptation_value){}
@@ -32,7 +35,7 @@ public:
         }
         return *this;
     }
-    double adapt() const {
+    long double adapt() const {
         return adaptation_value;
     }
     template<typename Adapt_func>
@@ -139,6 +142,12 @@ public:
     void erase(int index) {
         individuals.erase(individuals.begin() + index);
         --population_size;
+    }
+    auto begin() const {
+        return individuals.begin();
+    }
+    auto end() const {
+        return individuals.end();
     }
 
     using value_type=std::shared_ptr<individual<T>>;

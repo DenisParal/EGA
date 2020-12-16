@@ -49,7 +49,9 @@ int get_distance(const Key_type& first_key, const Key_type& second_key) {
     }
     int result = 0;
     for (int i = 0; i < first_key.size(); i++) {
-        result += (first_key.at(i) + second_key.at(i)) % 2;
+        if(first_key.at(i)!=second_key.at(i)){
+            ++result;
+        }
     }
     return result;
 }

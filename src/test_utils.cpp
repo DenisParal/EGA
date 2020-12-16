@@ -1,18 +1,30 @@
 #include "includes.h"
+#include "selections.hpp"
 
 int main(){
-    int shift_value;
-    std::vector<int> v;
-    std::vector<int> v2;
-    std::vector<int> result;
-    while(shift_value!=-1){
-        std::cout <<"Bin: ";
-        std::cin >>shift_value;
-        result=to_Grey(parse_func(shift_value,2,3));
-        print_key(result);
-        std::cout <<"\n";
-        result=out_Grey(result);
-        print_key(result);
-        std::cout <<"\n";
+    std::srand(std::time(nullptr));
+    population<int> pop;
+    
+    auto adapt_func= [](const std::vector<int>& genotype){
+        return pow((convert(genotype,2)-pow(2,genotype.size()-1)),2);
+    };
+    for(long i=0;i<21;i++){
+        pop.add(individual<int>(parse_func(i,2,5),adapt_func));
+    }
+    auto g=inbreeding_selection_strategy(std::size_t(2))(pop);
+    for(auto x:g){
+        print_key(x.first);
+        std::cout <<" "<<x.first.adapt()<<" ";
+        print_key(x.second);
+        std::cout <<" "<<x.first.adapt()<<"\n";
+    }
+    std::cout <<"\n\n";
+    
+    auto r=positive_assotiative_selection_sterategy()(pop);
+    for(auto x:r){
+        print_key(x.first);
+        std::cout <<" "<<x.first.adapt()<<" ";
+        print_key(x.second);
+        std::cout <<" "<<x.second.adapt()<<"\n";
     }
 }
