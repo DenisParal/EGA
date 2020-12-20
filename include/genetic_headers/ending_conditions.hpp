@@ -2,7 +2,7 @@
 
 class max_generation_cond{
 public:
-max_generation_cond(long , int max_generation_number):max_generation_number(max_generation_number){}
+max_generation_cond(int max_generation_number):max_generation_number(max_generation_number){}
 template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::shared_ptr<individual<T>>&){
     ++generation_number;
@@ -17,11 +17,11 @@ int generation_number=1;
 
 class max_adaptation_cond{
 public:
-max_adaptation_cond(long start_value, int max_stagnation_duration):last_adapt_maximum(start_value),max_stagnation_duration(max_stagnation_duration){}
+max_adaptation_cond(int max_stagnation_duration, long start_value):last_adapt_maximum(start_value),max_stagnation_duration(max_stagnation_duration){}
 template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
-    if(best_individ->adaptation_value>last_adapt_maximum){
-       last_adapt_maximum=best_individ->adaptation_value;
+    if(best_individ->adapt()>last_adapt_maximum){
+       last_adapt_maximum=best_individ->adapt();
        return true;
     }else{
         ++stagnation_duration;
@@ -38,12 +38,12 @@ int stagnation_duration=0;
 
 class average_adaptation_cond{
 public:
-average_adaptation_cond(long start_value, int max_stagnation_duration):last_average_adapt(start_value),max_stagnation_duration(max_stagnation_duration){}
+average_adaptation_cond(int max_stagnation_duration, long start_value):last_average_adapt(start_value),max_stagnation_duration(max_stagnation_duration){}
 template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     long average_adapt=0;
     for(auto& individ: population){
-        average_adapt+= individ->adaptation_value;
+        average_adapt+= individ->adapt();
     }
     std::cout <<"\nCOND_LOG: current average: "<<average_adapt<<" max average: "<<last_average_adapt<<"\n\n";
     if(average_adapt>last_average_adapt){
