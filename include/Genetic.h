@@ -12,6 +12,7 @@ class individual {
 public:
     individual():genotype(std::vector<T>()),adaptation_value(0){}
     individual(const std::vector<T>& genotype, long double value):genotype(genotype), adaptation_value(value){}
+    individual(std::vector<T>&& genotype, long double value):genotype(genotype), adaptation_value(value){}
     template<typename Adapt_func>
     individual(const std::vector<T>& genotype, const Adapt_func& func):genotype(genotype), adaptation_value(func(genotype)){}
     template<typename Adapt_func>

@@ -4,11 +4,12 @@ project(EvolutionGeneticAlgorithms)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++17")
 set(INCLUDE_DIR include)
+set(EGA_HEADERS include/genetic_headers)
 
 function(build_src SRC_NAME)
     set(TARGET_DIR "src/${SRC_NAME}.cpp")
     add_executable(${SRC_NAME} ${TARGET_DIR})
-    target_include_directories(${SRC_NAME} PUBLIC ${INCLUDE_DIR})
+    target_include_directories(${SRC_NAME} PUBLIC ${INCLUDE_DIR} ${EGA_HEADERS})
 endfunction(build_src)
 
 #build_src(monte_carlo)
