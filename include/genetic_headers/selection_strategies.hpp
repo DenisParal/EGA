@@ -3,8 +3,8 @@
 class stable_select_strategy{
 public:
 stable_select_strategy(int new_gen_percent):percentage(new_gen_percent){}
-template<typename T>
-std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen){
+template<typename T, typename Chance_calculator>
+std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Chance_calculator& func){
     std::vector<std::shared_ptr<individual<T>>> result_gen;
 
     std::size_t new_gen_size=(new_gen.size()*percentage)/100;
@@ -30,7 +30,7 @@ std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_p
                 chance=rand();
             }
             for(int i=0;i<old_gen.size();i++){
-                if(chance<=old_gen[i]->adapt()){
+                if(func(chance,old_gen[i]->adapt())){
                     sum_old_adapt_value-=old_gen[i]->adapt();
                     result_gen.push_back(old_gen[i]);
                     old_gen.erase(old_gen.begin()+i);
@@ -46,7 +46,7 @@ std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_p
                 chance=rand();
             }
             for(int i=0;i<new_gen.size();i++){
-                if(chance<=new_gen[i]->adapt()){
+                if(func(chance,new_gen[i]->adapt())){
                     sum_new_adapt_value-=new_gen[i]->adapt();
                     result_gen.push_back(new_gen[i]);
                     new_gen.erase(new_gen.begin()+i);
@@ -60,4 +60,39 @@ std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_p
     return result_gen;
 }
 int percentage;
+};
+
+
+class beta_tournament{
+public:
+beta_tournament(std::size_t tournament_size):tournament_size(tournament_size){}
+    template<typename T, typename Chance_calculator>
+    std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Chance_calculator& func){
+        std::size_t size=old_gen.size();
+        for(auto& x:new_gen){
+            old_gen.push_back(x);
+        }
+        std::vector<std::shared_ptr<individual<T>>> result(size);
+        std::vector<int> positions(tournament_size);
+        std::shared_ptr<individual<T>> best;
+        std::size_t pos;
+        for(std::size_t i=0;i<size;i++){
+            for(std::size_t j=0;j<tournament_size;j++){
+                positions[j]=rand()%old_gen.size();
+            }
+            best=old_gen[positions[0]];
+            pos=positions[0];
+            for(std::size_t j=1;j<tournament_size;j++){
+                if(func(old_gen[positions[j]]->adapt(),best->adapt())){
+                    best=old_gen[positions[j]];
+                    pos=positions[j];
+                }
+            }
+            result[i]=best;
+            old_gen.erase(old_gen.begin()+pos);
+        }
+        return result;
+    }
+
+std::size_t tournament_size;
 };

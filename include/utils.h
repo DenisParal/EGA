@@ -200,5 +200,39 @@ std::size_t optimum(const Container& cont, const Predicate& func){
     return index;
 }
 
+template<typename Container>
+std::vector<int> order_code(const Container& start_order){
+    std::size_t size=start_order.size();
+    std::vector<int> base(size);
+    for(std::size_t i=0;i<size;i++){
+        base[i]=start_order.at(i);
+    }
+    std::sort(base.begin(),base.end());
+    std::vector<int> result(size);
+    for(std::size_t i=0;i<size;i++){
+        int pos=std::find(base.begin(),base.end(),start_order.at(i))-base.begin();
+        result[i]=pos;
+        base.erase(base.begin()+pos);
+    }
+    return result;
+}
+
+template<typename Container>
+std::vector<int> order_decode(const Container& point_pool, const std::vector<int>& order){
+    std::size_t size=point_pool.size();
+    std::vector<int> base(size);
+    for(std::size_t i=0;i<size;i++){
+        base[i]=point_pool.at(i);
+    }
+    std::sort(base.begin(),base.end());
+    std::vector<int> result(size);
+    for(std::size_t i=0;i<size;i++){
+        int pos=order[i];
+        result[i]=base[pos];
+        base.erase(base.begin()+pos);
+    }
+    return result;
+}
+
 template<typename T>
-void print_type(T& t);
+void print_type(T&);

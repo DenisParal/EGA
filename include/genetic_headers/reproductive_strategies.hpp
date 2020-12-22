@@ -176,7 +176,7 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
             chance=rand();
         }
         for(int i=0;i<size;i++){
-            if(chance>=population[i]->adapt()){
+            if(1.0/chance>=1.0/population[i]->adapt()){
                 candidate.second=population[i];
                 population.erase(population.begin()+i);
                 sum_adapt_value-=candidate.second->adapt();
@@ -186,7 +186,7 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
                 candidate.second=std::shared_ptr<individual<T>>();
                 break;
             }else{
-                chance+=population[i]->adapt();
+                chance-=population[i]->adapt();
             }
         }
     }

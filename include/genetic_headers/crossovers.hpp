@@ -57,7 +57,7 @@ public:
 };
 
 
-class order_crossover{
+class classic_crossover{
 public:
     template<typename T, typename Adapt_func>
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
@@ -80,4 +80,37 @@ public:
     }
     return offspring;
 }
+};
+
+class npoint_ordered_crossover{
+public:
+    npoint_ordered_crossover(std::vector<int>& positions):positions(positions){}
+    template<typename T, typename Adapt_func>
+    std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
+        std::vector<int> first_parent_order=order_code(*(parents.first));
+        std::vector<int> second_parent_order=order_code(*(parents.second));
+        std::vector<std::shared_ptr<individual<T>>> offspring;
+        std::size_t size=first_parent_order.size();
+        std::size_t index=0;
+        bool changed=false;
+        std::vector<T> fgenotype(size);
+        std::vector<T> sgenotype(size);
+        for(std::size_t i=0;i<size;i++){
+            if(i==positions[index]&&index<positions.size()){
+                changed=!changed;
+                ++index;
+            }
+            if(changed){
+                fgenotype[i]=second_parent_order.at(i);
+                sgenotype[i]=first_parent_order.at(i);
+            }else{
+                fgenotype[i]=first_parent_order.at(i);
+                sgenotype[i]=second_parent_order.at(i);
+            }
+        }
+        offspring.push_back(std::make_shared<individual<T>>(order_decode(*(parents.first),fgenotype),func));
+        offspring.push_back(std::make_shared<individual<T>>(order_decode(*(parents.second),sgenotype),func));
+        return offspring;
+    }
+    std::vector<int> positions;
 };

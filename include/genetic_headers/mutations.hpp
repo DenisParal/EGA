@@ -30,3 +30,12 @@ void operator()(std::shared_ptr<individual<T>>& individ){
     }
 }
 };
+
+class point_ordered_mut{
+public:
+template<typename T>
+void operator()(std::shared_ptr<individual<T>>& individ){
+    std::size_t pos=rand()%(individ->size()-1);
+    std::swap((*individ)[pos],(*individ)[pos+1]);
+}
+};
