@@ -1,9 +1,16 @@
 #include "includes.h"
 
-class max_generation_cond{
+
+template<typename T>
+class end_condition{
+public:
+    virtual bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::shared_ptr<individual<T>>&)=0;
+};
+
+template<typename T>
+class max_generation_cond : public end_condition<T>{
 public:
 max_generation_cond(int max_generation_number):max_generation_number(max_generation_number){}
-template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::shared_ptr<individual<T>>&){
     ++generation_number;
     if(generation_number<=max_generation_number){
@@ -15,10 +22,10 @@ int max_generation_number;
 int generation_number=1;
 };
 
-class max_adaptation_cond{
+template<typename T>
+class max_adaptation_cond : public end_condition<T>{
 public:
 max_adaptation_cond(int max_stagnation_duration, long start_value):last_adapt_maximum(start_value),max_stagnation_duration(max_stagnation_duration){}
-template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     if(best_individ->adapt()>last_adapt_maximum){
        last_adapt_maximum=best_individ->adapt();
@@ -38,10 +45,10 @@ int max_stagnation_duration;
 int stagnation_duration=0;
 };
 
-class min_adaptation_cond{
+template<typename T>
+class min_adaptation_cond : public end_condition<T>{
 public:
 min_adaptation_cond(int max_stagnation_duration):max_stagnation_duration(max_stagnation_duration){}
-template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     if(last_adapt_minimum==-1){
         last_adapt_minimum=best_individ->adapt();
@@ -65,10 +72,10 @@ int max_stagnation_duration;
 int stagnation_duration=0;
 };
 
-class average_adaptation_cond{
+template<typename T>
+class average_adaptation_cond : public end_condition<T>{
 public:
 average_adaptation_cond(int max_stagnation_duration, long start_value):last_average_adapt(start_value),max_stagnation_duration(max_stagnation_duration){}
-template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     long average_adapt=0;
     for(auto& individ: population){
@@ -93,10 +100,10 @@ int max_stagnation_duration;
 int stagnation_duration=0;
 };
 
-class average_adaptation_cond_reversed{
+template<typename T>
+class average_adaptation_cond_reversed : public end_condition<T>{
 public:
 average_adaptation_cond_reversed(int max_stagnation_duration, long start_value):last_average_adapt(start_value),max_stagnation_duration(max_stagnation_duration){}
-template<typename T>
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     long average_adapt=0;
     for(auto& individ: population){

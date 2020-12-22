@@ -2,9 +2,16 @@
 #include <random>
 #include <algorithm>
 
-class random_reproductive_strategy{
-public:
 template<typename T>
+class reproductive_strategy{
+public:
+    virtual std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population)=0;
+};
+
+
+template<typename T>
+class random_reproductive_strategy : public reproductive_strategy<T>{
+public:
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
     std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> result;
@@ -25,10 +32,10 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
 }
 };
  
-class inbreeding_reproductive_strategy{
+template<typename T>
+class inbreeding_reproductive_strategy : public reproductive_strategy<T>{
 public:
 inbreeding_reproductive_strategy(std::size_t distance):distance(distance){}
-template<typename T>
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
     std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> result;
@@ -56,10 +63,10 @@ private:
 std::size_t distance;
 };
 
-class outobreeding_reproductive_strategy{
+template<typename T>
+class outobreeding_reproductive_strategy : public reproductive_strategy<T>{
 public:
 outobreeding_reproductive_strategy(std::size_t distance):distance(distance){}
-template<typename T>
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
     std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> result;
@@ -85,10 +92,9 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
 std::size_t distance;
 };
 
-
-class positive_assotiative_reproductive_sterategy{
-public:
 template<typename T>
+class positive_assotiative_reproductive_sterategy : public reproductive_strategy<T>{
+public:
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
     long sum_adapt_value=0;
@@ -140,9 +146,9 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
 }
 };
 
-class negative_assotiative_reproductive_sterategy{
-public:
 template<typename T>
+class negative_assotiative_reproductive_sterategy : public reproductive_strategy<T>{
+public:
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
     std::size_t sum_adapt_value=0;

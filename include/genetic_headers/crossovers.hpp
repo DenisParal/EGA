@@ -1,9 +1,16 @@
 #include "includes.h"
 
-class npoint_crossover{
+
+template<typename T, typename Adapt_func>
+class crossover{
+public:
+    virtual std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2)=0;
+};
+
+template<typename T, typename Adapt_func>
+class npoint_crossover : public crossover<T,Adapt_func>{
 public:
     npoint_crossover(std::vector<int>& positions):positions(positions){}
-    template<typename T, typename Adapt_func>
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
     std::vector<std::shared_ptr<individual<T>>> offspring;
     std::size_t size=parents.first->size();
@@ -31,9 +38,9 @@ public:
 std::vector<int> positions;
 };
 
-class homogen_equal_crossover{
+template<typename T, typename Adapt_func>
+class homogen_equal_crossover : public crossover<T,Adapt_func>{
 public:
-    template<typename T, typename Adapt_func>
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
     std::vector<std::shared_ptr<individual<T>>> offspring;
     std::size_t size=parents.first->size();
@@ -56,10 +63,9 @@ public:
 }
 };
 
-
-class classic_crossover{
+template<typename T, typename Adapt_func>
+class classic_crossover : public crossover<T,Adapt_func>{
 public:
-    template<typename T, typename Adapt_func>
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
     std::vector<std::shared_ptr<individual<T>>> offspring;
     std::size_t size=parents.first->size();
@@ -82,10 +88,10 @@ public:
 }
 };
 
-class npoint_ordered_crossover{
+template<typename T, typename Adapt_func>
+class npoint_ordered_crossover : public crossover<T,Adapt_func>{
 public:
     npoint_ordered_crossover(std::vector<int>& positions):positions(positions){}
-    template<typename T, typename Adapt_func>
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
         std::vector<int> first_parent_order=order_code(*(parents.first));
         std::vector<int> second_parent_order=order_code(*(parents.second));

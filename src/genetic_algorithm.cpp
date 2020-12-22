@@ -24,6 +24,21 @@ std::vector<std::shared_ptr<individual<int>>> generate_population(std::size_t in
     return result;
 }
 
+
+class dist_calculator{
+public:
+dist_calculator(const std::vector<std::vector<float>>& data):data(data){}
+auto operator()(const std::vector<int>& path){
+    long double sum=0;
+    for(int i=0;i<path.size()-1;i++){
+            sum+=data[path[i]][path[i+1]];
+    }
+    return sum;
+}
+
+std::vector<std::vector<float>> data;
+};
+
 int main(){
     std::srand(std::time(nullptr));
 
@@ -64,22 +79,33 @@ int main(){
 
     auto pool=generate_population(size,30,dist_func);
     long double sum_adapt=0;
-    for(auto x:pool){
-        print_key(*x);
-        std::cout <<" "<<x->adapt()<<"\n";
-        sum_adapt+=x->adapt();
-    }
+    // for(auto x:pool){
+    //     print_key(*x);
+    //     std::cout <<" "<<x->adapt()<<"\n";
+    //     sum_adapt+=x->adapt();
+    // }
 
     std::vector<int> positions{1,3};
 
-    auto sel=beta_tournament(5);
-    auto mut=point_ordered_mut();
-    auto reprod=positive_assotiative_reproductive_sterategy();
-    auto cross=npoint_ordered_crossover(positions);
-    auto e_cond=max_generation_cond(50);
+    selection_strategy<int,decltype(decider)>* sel= new beta_tournament<int,decltype(decider)>(5);
+    mutation<int>* mut= new point_ordered_mut<int>();
+    reproductive_strategy<int>* reprod= new positive_assotiative_reproductive_sterategy<int>();
+    crossover<int,decltype(dist_func)>* cross = new npoint_ordered_crossover<int,decltype(dist_func)>(positions);
+    end_condition<int>* e_cond = new max_generation_cond<int>(20);
 
-    auto algorithm=algorithm_configuration<npoint_ordered_crossover,point_ordered_mut,positive_assotiative_reproductive_sterategy,beta_tournament,max_generation_cond>(
+    // auto res=(*cross)(std::pair<std::shared_ptr<individual<int>>,std::shared_ptr<individual<int>>>(pool[0],pool[1]),dist_func);
+
+    // print_key(*(pool[0]));
+    // std::cout <<"\n";
+    // print_key(*(pool[1]));
+    // std::cout <<"\n";
+    // print_key(*(res[0]));
+    // std::cout <<"\n";
+    // print_key(*(res[1]));
+    // std::cout <<"\n";
+
+    auto algorithm=algorithm_configuration<crossover<int,decltype(dist_func)>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,decltype(decider)>,end_condition<int>>(
         cross,mut,reprod,sel,e_cond
     );
-    algorithm(pool,dist_func,dist_optimum,decider,100);
+    algorithm(pool,dist_func,dist_optimum,decider,30);
 }

@@ -8,7 +8,7 @@
 template<typename Crossover, typename Mutation, typename Reproduction, typename Selection, typename End_condition>
 class algorithm_configuration{
 public:
-algorithm_configuration(const Crossover& cross_f, const Mutation& mut_f, const Reproduction& reprod_f, const Selection& select_f, const End_condition& e_cond):cross_f(cross_f),mut_f(mut_f),reprod_f(reprod_f),select_f(select_f),e_cond(e_cond) {}
+algorithm_configuration(Crossover* cross_f, Mutation* mut_f, Reproduction* reprod_f, Selection* select_f, End_condition* e_cond):cross_f(cross_f),mut_f(mut_f),reprod_f(reprod_f),select_f(select_f),e_cond(e_cond) {}
 template<typename T, typename Adapt_func, typename Optimum_func, typename Chance_decider> 
 std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const Adapt_func& func, const Optimum_func& optimum, const Chance_decider& decider, long mutation_chance){
     long mutation_roll;
@@ -18,19 +18,19 @@ std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<indi
     std::vector<std::shared_ptr<individual<T>>> next_generation;
     std::shared_ptr<individual<T>> best_individ;
     do{
-        parents=reprod_f(current_generation);
+        parents=(*reprod_f)(current_generation);
         for(auto& pair:parents){
-        auto offspring=cross_f(pair,func);
+        auto offspring=(*cross_f)(pair,func);
             for(auto& individ:offspring){
                 mutation_roll=rand()%101;
                 if(mutation_roll<=mutation_chance){
-                    mut_f(individ);
+                    (*mut_f)(individ);
                 }
                 next_generation.push_back(individ);
             }
         }
         ++generation;
-        current_generation=select_f(current_generation,next_generation,decider);
+        current_generation=(*select_f)(current_generation,next_generation,decider);
         best_individ=optimum(current_generation);
 
         
@@ -46,7 +46,7 @@ std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<indi
         }
 
         next_generation.clear();
-    }while(e_cond(current_generation, best_individ));
+    }while((*e_cond)(current_generation, best_individ));
 
     std::cout <<"\n\n\tFinal result: ";
     print_key(*best_individ);
@@ -54,9 +54,9 @@ std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<indi
     return best_individ;
 }
 
-End_condition e_cond;
-Crossover cross_f;
-Mutation mut_f;
-Selection select_f;
-Reproduction reprod_f;
+End_condition* e_cond;
+Crossover* cross_f;
+Mutation* mut_f;
+Selection* select_f;
+Reproduction* reprod_f;
 };

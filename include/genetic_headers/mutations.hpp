@@ -1,17 +1,24 @@
 #include "includes.h"
 
-class point_mut{
-public:
+
 template<typename T>
+class mutation{
+public:
+    virtual void operator()(std::shared_ptr<individual<T>>& individ)=0;
+};
+
+template<typename T>
+class point_mut : public mutation<T>{
+public:
 void operator()(std::shared_ptr<individual<T>>& individ){
     std::size_t pos=rand()%individ->size();
     (*individ)[pos]=1-(*individ)[pos];
 }
 };
 
-class saltation_mut{
-public:
 template<typename T>
+class saltation_mut : public mutation<T>{
+public:
 void operator()(std::shared_ptr<individual<T>>& individ){
     std::size_t pos1=rand()%individ->size();
     std::size_t pos2=rand()%individ->size();
@@ -19,9 +26,9 @@ void operator()(std::shared_ptr<individual<T>>& individ){
 }
 };
 
-class inversion_mut{
-public:
 template<typename T>
+class inversion_mut : public mutation<T>{
+public:
 void operator()(std::shared_ptr<individual<T>>& individ){
     std::size_t pos1=rand()%individ->size();
     std::size_t pos2=rand()%individ->size();
@@ -31,9 +38,9 @@ void operator()(std::shared_ptr<individual<T>>& individ){
 }
 };
 
-class point_ordered_mut{
-public:
 template<typename T>
+class point_ordered_mut : public mutation<T>{
+public:
 void operator()(std::shared_ptr<individual<T>>& individ){
     std::size_t pos=rand()%(individ->size()-1);
     std::swap((*individ)[pos],(*individ)[pos+1]);

@@ -1,10 +1,17 @@
 #include "includes.h"
 
-class stable_select_strategy{
+
+template<typename T, typename Comparator>
+class selection_strategy{
+public:
+    virtual std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Comparator& func)=0;
+};
+
+template<typename T, typename Comparator>
+class stable_select_strategy : public selection_strategy<T,Comparator>{
 public:
 stable_select_strategy(int new_gen_percent):percentage(new_gen_percent){}
-template<typename T, typename Chance_calculator>
-std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Chance_calculator& func){
+std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Comparator& func){
     std::vector<std::shared_ptr<individual<T>>> result_gen;
 
     std::size_t new_gen_size=(new_gen.size()*percentage)/100;
@@ -63,11 +70,12 @@ int percentage;
 };
 
 
-class beta_tournament{
+
+template<typename T, typename Comparator>
+class beta_tournament : public selection_strategy<T,Comparator>{
 public:
 beta_tournament(std::size_t tournament_size):tournament_size(tournament_size){}
-    template<typename T, typename Chance_calculator>
-    std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Chance_calculator& func){
+    std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Comparator& func){
         std::size_t size=old_gen.size();
         for(auto& x:new_gen){
             old_gen.push_back(x);
