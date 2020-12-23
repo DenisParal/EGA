@@ -25,19 +25,8 @@ std::vector<std::shared_ptr<individual<int>>> generate_population(std::size_t in
 }
 
 
-class dist_calculator{
-public:
-dist_calculator(const std::vector<std::vector<float>>& data):data(data){}
-auto operator()(const std::vector<int>& path){
-    long double sum=0;
-    for(int i=0;i<path.size()-1;i++){
-            sum+=data[path[i]][path[i+1]];
-    }
-    return sum;
-}
 
 std::vector<std::vector<float>> data;
-};
 
 int main(){
     std::srand(std::time(nullptr));
@@ -79,11 +68,6 @@ int main(){
 
     auto pool=generate_population(size,30,dist_func);
     long double sum_adapt=0;
-    // for(auto x:pool){
-    //     print_key(*x);
-    //     std::cout <<" "<<x->adapt()<<"\n";
-    //     sum_adapt+=x->adapt();
-    // }
 
     std::vector<int> positions{1,3};
 
