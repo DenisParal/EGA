@@ -45,7 +45,7 @@ int main(){
     }
 
     auto dist_func=[=](const std::vector<int>& genotype){
-        int sum=0;
+        long double sum=0;
         for(int i=0;i<genotype.size()-1;i++){
             sum+=matr[genotype[i]][genotype[i+1]];
         }
@@ -63,7 +63,7 @@ int main(){
     };
 
     auto decider=[](long double value_to_compare, long double value_to_compare_with){
-        return value_to_compare>value_to_compare_with;
+        return value_to_compare<value_to_compare_with;
     };
 
 
@@ -77,6 +77,7 @@ std::vector<crossover<int,decltype(dist_func)>*> crossover_strategies;
 std::vector<end_condition<int>*> end_conditions;
 
 forming_strategies.push_back(new random_forming_algorithm<decltype(dist_func)>());
+forming_strategies.push_back(new greedy_forming_algorithm<decltype(dist_func)>(matr));
 
 selection_strategies.push_back(new stable_select_strategy<int,decltype(decider)>(50));
 selection_strategies.push_back(new beta_tournament<int,decltype(decider)>(5));
@@ -85,11 +86,15 @@ mutation_strategies.push_back(new point_ordered_mut<int>());
 mutation_strategies.push_back(new saltation_mut<int>());
 
 reproductive_strategies.push_back(new positive_assotiative_reproductive_sterategy<int>());
-reproductive_strategies.push_back(new negative_assotiative_reproductive_sterategy<int>);
+reproductive_strategies.push_back(new negative_assotiative_reproductive_sterategy<int>());
+reproductive_strategies.push_back(new ordered_inbreeding_reproductive_strategy<int>(8));
 
 crossover_strategies.push_back(new npoint_ordered_crossover<int,decltype(dist_func)>(positions));
+crossover_strategies.push_back(new classic_crossover<int,decltype(dist_func)>());
 
-end_conditions.push_back(new max_generation_cond<int>(20));
+end_conditions.push_back(new max_generation_cond<int>(50));
+end_conditions.push_back(new average_adaptation_cond_reversed<int>(10));
+
 
 
 menu<decltype(dist_func),decltype(decider)> my_menu(forming_strategies,selection_strategies,mutation_strategies,reproductive_strategies,crossover_strategies,

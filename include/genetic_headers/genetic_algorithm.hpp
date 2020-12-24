@@ -34,7 +34,7 @@ std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<indi
         current_generation=(*select_f)(current_generation,next_generation,decider);
         best_individ=current_generation[0];
         for(auto& individ: current_generation){
-            if(decider(best_individ->adapt(),individ->adapt())){
+            if(decider(individ->adapt(),best_individ->adapt())){
                 best_individ=individ;
             }
         }

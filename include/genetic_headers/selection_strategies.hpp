@@ -14,7 +14,7 @@ stable_select_strategy(int new_gen_percent):percentage(new_gen_percent){}
 std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_ptr<individual<T>>>& old_gen, std::vector<std::shared_ptr<individual<T>>>& new_gen, const Comparator& func){
     std::vector<std::shared_ptr<individual<T>>> result_gen;
 
-    std::size_t new_gen_size=(new_gen.size()*percentage)/100;
+    std::size_t new_gen_size=(old_gen.size()*percentage)/100;
     std::size_t old_gen_size=old_gen.size()-new_gen_size;
 
     std::size_t sum_old_adapt_value=0;

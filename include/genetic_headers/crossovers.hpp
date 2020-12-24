@@ -67,6 +67,8 @@ template<typename T, typename Adapt_func>
 class classic_crossover : public crossover<T,Adapt_func>{
 public:
     std::vector<std::shared_ptr<individual<T>>> operator()(const std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>& parents, const Adapt_func& func, std::size_t offspring_size=2){
+    std::vector<int> first_parent_order=order_code(*(parents.first));
+    std::vector<int> second_parent_order=order_code(*(parents.second));
     std::vector<std::shared_ptr<individual<T>>> offspring;
     std::size_t size=parents.first->size();
     std::vector<std::vector<T>> genotypes(offspring_size,std::vector<T>(size));
@@ -75,14 +77,14 @@ public:
         for(int j=0;j<size;j++){
             chance=rand()%2;
             if(chance==0){
-                genotypes[i][j]=parents.first->at(j);
+                genotypes[i][j]=first_parent_order.at(j);
             }else{
-                genotypes[i][j]=parents.second->at(j);
+                genotypes[i][j]=second_parent_order.at(j);
             }
         }
     }
     for(auto& x:genotypes){
-        offspring.push_back(std::make_shared<individual<T>>(x,func));
+        offspring.push_back(std::make_shared<individual<T>>(order_decode(*(parents.first),x),func));
     }
     return offspring;
 }
@@ -120,3 +122,4 @@ public:
     }
     std::vector<int> positions;
 };
+

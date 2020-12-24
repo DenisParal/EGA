@@ -83,6 +83,11 @@ void start(){
     configure();
     }
     auto pool=(*forming_str)(genotype_size,population_size,adapt_func);
+    for(std::size_t i=0;i<pool.size();i++){
+            std::cout <<i+1<<") ";
+            print_key(*(pool[i]));
+            std::cout <<" ("<<pool[i]->adapt()<<")\n";
+    }
     auto algorithm=algorithm_configuration<crossover<int,Adaptation_func>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,Comparator>,end_condition<int>>(
         crossover_str,mutation_str,reproductive_str,selection_str,end_cond
     );
@@ -130,12 +135,12 @@ Option* set_option(const std::vector<std::string>& option_names, std::vector<Opt
     return option_list[decision-1];
 }
 
-std::vector<std::string> forming_strategies_names{"Random"};
+std::vector<std::string> forming_strategies_names{"Random","Greedy"};
 std::vector<std::string> selection_strategies_names{"Proportial","Beta tournament"};
 std::vector<std::string> mutation_strategies_names{"Point ordered", "Saltation"};
-std::vector<std::string> reproductive_strategies_names{"Positive assotiative", "Negative assotiative"};
-std::vector<std::string> crossover_strategies_names{"Double point"};
-std::vector<std::string> end_conditions_names{"Max generation"};
+std::vector<std::string> reproductive_strategies_names{"Positive assotiative", "Negative assotiative", "Inbreeding"};
+std::vector<std::string> crossover_strategies_names{"Double point","Classic"};
+std::vector<std::string> end_conditions_names{"Max generation","Average adaptation"};
 
 std::vector<forming_algorithm<Adaptation_func>*> forming_strategies;
 std::vector<selection_strategy<int,Comparator>*> selection_strategies;

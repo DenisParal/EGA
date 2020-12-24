@@ -33,21 +33,26 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
 };
  
 template<typename T>
-class inbreeding_reproductive_strategy : public reproductive_strategy<T>{
+class ordered_inbreeding_reproductive_strategy : public reproductive_strategy<T>{
 public:
-inbreeding_reproductive_strategy(std::size_t distance):distance(distance){}
+ordered_inbreeding_reproductive_strategy(std::size_t distance):distance(distance){}
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
+    std::vector<int> first_parent_order;
+    std::vector<int> second_parent_order;
+    
     std::size_t size=population.size();
     std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> result;
     std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>> candidate;
     std::size_t pos1,pos2;
-    while(size>1){
+    for(std::size_t j=0;j<population.size();j++){
         pos1=rand()%population.size();
         candidate.first=population[pos1];
+        first_parent_order=order_code(*(candidate.first));
         population.erase(population.begin()+pos1);
 
-        for(int i=0;i<size;i++){
-            if(get_distance(*(population[i]),*(candidate.first))<=distance){
+        for(int i=0;i<population.size();i++){
+            second_parent_order=order_code(*(population[i]));
+            if(get_distance(first_parent_order,second_parent_order)<=distance){
                 candidate.second=population[i];
                 population.erase(population.begin()+i);
                 result.push_back(candidate);
