@@ -1,4 +1,4 @@
-#include "genetic_algorithm.hpp"
+#include "menu.hpp"
 #include <fstream>
 
 std::ifstream fin;
@@ -66,16 +66,47 @@ int main(){
         return value_to_compare>value_to_compare_with;
     };
 
-    auto pool=generate_population(size,30,dist_func);
-    long double sum_adapt=0;
 
-    std::vector<int> positions{1,3};
+    std::vector<int> positions{1,4};
 
-    selection_strategy<int,decltype(decider)>* sel= new beta_tournament<int,decltype(decider)>(5);
-    mutation<int>* mut= new point_ordered_mut<int>();
-    reproductive_strategy<int>* reprod= new positive_assotiative_reproductive_sterategy<int>();
-    crossover<int,decltype(dist_func)>* cross = new npoint_ordered_crossover<int,decltype(dist_func)>(positions);
-    end_condition<int>* e_cond = new max_generation_cond<int>(20);
+std::vector<forming_algorithm<decltype(dist_func)>*> forming_strategies;
+std::vector<selection_strategy<int,decltype(decider)>*> selection_strategies;
+std::vector<mutation<int>*> mutation_strategies;
+std::vector<reproductive_strategy<int>*> reproductive_strategies;
+std::vector<crossover<int,decltype(dist_func)>*> crossover_strategies;
+std::vector<end_condition<int>*> end_conditions;
+
+forming_strategies.push_back(new random_forming_algorithm<decltype(dist_func)>());
+
+selection_strategies.push_back(new stable_select_strategy<int,decltype(decider)>(50));
+selection_strategies.push_back(new beta_tournament<int,decltype(decider)>(5));
+
+mutation_strategies.push_back(new point_ordered_mut<int>());
+mutation_strategies.push_back(new saltation_mut<int>());
+
+reproductive_strategies.push_back(new positive_assotiative_reproductive_sterategy<int>());
+reproductive_strategies.push_back(new negative_assotiative_reproductive_sterategy<int>);
+
+crossover_strategies.push_back(new npoint_ordered_crossover<int,decltype(dist_func)>(positions));
+
+end_conditions.push_back(new max_generation_cond<int>(20));
+
+
+menu<decltype(dist_func),decltype(decider)> my_menu(forming_strategies,selection_strategies,mutation_strategies,reproductive_strategies,crossover_strategies,
+end_conditions, dist_func,decider,size);
+
+my_menu.start_menu();
+
+
+    // auto pool=generate_population(size,30,dist_func);
+    // long double sum_adapt=0;
+
+
+    // selection_strategy<int,decltype(decider)>* sel= new beta_tournament<int,decltype(decider)>(5);
+    // mutation<int>* mut= new point_ordered_mut<int>();
+    // reproductive_strategy<int>* reprod= new positive_assotiative_reproductive_sterategy<int>();
+    // crossover<int,decltype(dist_func)>* cross = new npoint_ordered_crossover<int,decltype(dist_func)>(positions);
+    // end_condition<int>* e_cond = new max_generation_cond<int>(20);
 
     // auto res=(*cross)(std::pair<std::shared_ptr<individual<int>>,std::shared_ptr<individual<int>>>(pool[0],pool[1]),dist_func);
 
@@ -88,8 +119,11 @@ int main(){
     // print_key(*(res[1]));
     // std::cout <<"\n";
 
-    auto algorithm=algorithm_configuration<crossover<int,decltype(dist_func)>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,decltype(decider)>,end_condition<int>>(
-        cross,mut,reprod,sel,e_cond
-    );
-    algorithm(pool,dist_func,dist_optimum,decider,30);
+    // auto algorithm=algorithm_configuration<crossover<int,decltype(dist_func)>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,decltype(decider)>,end_condition<int>>(
+    //     cross,mut,reprod,sel,e_cond
+    // );
+    // algorithm(pool,dist_func,dist_optimum,decider,30);
+
+
+
 }

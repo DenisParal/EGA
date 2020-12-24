@@ -5,6 +5,7 @@ template<typename T>
 class end_condition{
 public:
     virtual bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::shared_ptr<individual<T>>&)=0;
+    virtual void reset()=0;
 };
 
 template<typename T>
@@ -18,8 +19,11 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::s
     }
     return false;
 }
+void reset(){
+    generation_number=0;
+}
 int max_generation_number;
-int generation_number=1;
+int generation_number=0;
 };
 
 template<typename T>
@@ -27,6 +31,10 @@ class max_adaptation_cond : public end_condition<T>{
 public:
 max_adaptation_cond(int max_stagnation_duration, long start_value):last_adapt_maximum(start_value),max_stagnation_duration(max_stagnation_duration){}
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
+    if(last_adapt_maximum==-1){
+        last_adapt_maximum=best_individ->adapt();
+        return true;
+    }else
     if(best_individ->adapt()>last_adapt_maximum){
        last_adapt_maximum=best_individ->adapt();
        stagnation_duration=0;
@@ -39,6 +47,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
         }
     }
     return true;
+}
+void reset(){
+    stagnation_duration=0;
+    last_adapt_maximum=-1;
 }
 long last_adapt_maximum;
 int max_stagnation_duration;
@@ -67,6 +79,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
     }
     return true;
 }
+void reset(){
+    stagnation_duration=0;
+    last_adapt_minimum=-1;
+}
 long last_adapt_minimum=-1;
 int max_stagnation_duration;
 int stagnation_duration=0;
@@ -82,6 +98,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
         average_adapt+= individ->adapt();
     }
     std::cout <<"\nCOND_LOG: current average: "<<average_adapt<<" last average: "<<last_average_adapt<<"\n\n";
+    if(last_average_adapt==-1){
+        last_average_adapt=average_adapt;
+        return true;
+    }else
     if(average_adapt>last_average_adapt){
        last_average_adapt=average_adapt;
        stagnation_duration=0;
@@ -94,6 +114,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
         }
     }
     return true;
+}
+void reset(){
+    stagnation_duration=0;
+    last_average_adapt=-1;
 }
 long last_average_adapt;
 int max_stagnation_duration;
@@ -110,6 +134,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
         average_adapt+= individ->adapt();
     }
     std::cout <<"\nCOND_LOG: current average: "<<average_adapt<<" last average: "<<last_average_adapt<<"\n\n";
+     if(last_average_adapt==-1){
+        last_average_adapt=average_adapt;
+        return true;
+    }else
     if(average_adapt<last_average_adapt){
        last_average_adapt=average_adapt;
        stagnation_duration=0;
@@ -122,6 +150,10 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
         }
     }
     return true;
+}
+void reset(){
+    stagnation_duration=0;
+    last_average_adapt=-1;
 }
 long last_average_adapt;
 int max_stagnation_duration;

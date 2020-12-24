@@ -42,16 +42,14 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
     std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>> candidate;
     std::size_t pos1,pos2;
     while(size>1){
-        pos1=rand()%size;
+        pos1=rand()%population.size();
         candidate.first=population[pos1];
         population.erase(population.begin()+pos1);
-        --size;
 
         for(int i=0;i<size;i++){
-            if(get_distance(*population[i],*(candidate.first))<=distance){
+            if(get_distance(*(population[i]),*(candidate.first))<=distance){
                 candidate.second=population[i];
                 population.erase(population.begin()+i);
-                --size;
                 result.push_back(candidate);
                 break;
             }
@@ -151,7 +149,7 @@ class negative_assotiative_reproductive_sterategy : public reproductive_strategy
 public:
 std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> operator()(std::vector<std::shared_ptr<individual<T>>> population){
     std::size_t size=population.size();
-    std::size_t sum_adapt_value=0;
+    long sum_adapt_value=0;
     for(auto x: population){
         sum_adapt_value+= x->adapt();
     }
@@ -159,13 +157,13 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
     std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>> candidate;
     std::size_t pos1,pos2;
     long double chance;
-    while(size>1){
+    while(population.size()>1){
         if(sum_adapt_value>0){
             chance=rand()%sum_adapt_value;
         }else{
             chance=rand();
         }
-        for(int i=0;i<size;i++){
+        for(int i=0;i<population.size();i++){
             if(chance<=population[i]->adapt()){
                 candidate.first=population[i];
                 population.erase(population.begin()+i);
@@ -181,8 +179,8 @@ std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<
         }else{
             chance=rand();
         }
-        for(int i=0;i<size;i++){
-            if(1.0/chance>=1.0/population[i]->adapt()){
+        for(int i=0;i<population.size();i++){
+            if(1.0/chance<=1.0/(population[i]->adapt())){
                 candidate.second=population[i];
                 population.erase(population.begin()+i);
                 sum_adapt_value-=candidate.second->adapt();

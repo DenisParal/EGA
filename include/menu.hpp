@@ -1,145 +1,154 @@
 #include "genetic_algorithm.hpp"
-#include <fstream>
-
-std::ifstream fin;
+#include <string>
 
 template<typename Adaptation_func, typename Comparator>
 class menu{
 public:
-menu(const std::vector<selection_strategy<int,Decider>*>& sel_str, const std::vector<mutation<int>*>& mut_str, 
-const std::vector<reproductive_strategy<int>*>& rep_str, const std::vector<crossover<int,decltype(dist_func)>*>& cros_str,
-const std::vector<end_condition<int>*>& end_cond, const Adaptation_func& adapt_func, const Comparator& compare_func, std::size_t genotype_size):selection_strategies(sel_str),mutation_strategies(mut_str),reproductive_strategies(rep_str),
+menu(const std::vector<forming_algorithm<Adaptation_func>*>& form_str, const std::vector<selection_strategy<int,Comparator>*>& sel_str, const std::vector<mutation<int>*>& mut_str, 
+const std::vector<reproductive_strategy<int>*>& rep_str, const std::vector<crossover<int,Adaptation_func>*>& cros_str,
+const std::vector<end_condition<int>*>& end_cond, const Adaptation_func& adapt_func, const Comparator& compare_func, std::size_t genotype_size): forming_strategies(form_str),selection_strategies(sel_str),mutation_strategies(mut_str),reproductive_strategies(rep_str),
 crossover_strategies(cros_str), end_conditions(end_cond), adapt_func(adapt_func), compare_func(compare_func), genotype_size(genotype_size){}
 
 void start_menu(){
     int decision=-1;
-    while(decision!=4){
-        std::cout <<"\tMENU\n";
-        std::cout <<"1)Configure\n2)Set data\n3)Start algorithm\n4)Exit\n";
-        while(decision<1 && decision>4){
-            std::cout <<"\nDecision: ";
-            std::cin >>decision;
-        }
-        switch(decision){
-            case 1 : configure();
-            case 2 : set_size();
-            case 3 : start();
-            case 4 : exit();
-        }
+    std::cout <<"\tMENU\n";
+    std::cout <<"1)Configure\n2)Set data\n3)Start algorithm\n4)Exit\n";
+    while(decision<1 || decision>4){
+        std::cout <<"\nDecision: ";
+        std::cin >>decision;
     }
-    
+    switch(decision){
+        case 1: configure();
+        case 2: set_data();
+        case 3: start();
+        case 4: exit(1);
+    }
 }
-
+private:
 void set_data(){
     int decision=-1;
-    std::size_t value=-1;
-    while(decision!=3){
-        std::cout <<"\tMENU\n";
-        std::cout <<"1)Population size\n2)Mutation chance\n3)Exit\n";
-        while(decision<1 && decision>3){
-            std::cout <<"\nDecision: ";
-            std::cin >>decision;
-        }
-        if(decision!=3){
-            while(value<0){
-                std::cout <<"\nValue: ";
-                std::cin >>value;
-            }
-        }
-        switch(decision){
-            case 1 : population_size=value;
-            case 2 : mutation_chance=value;
-            case 3 : return;
+    int value=-1;
+    std::cout <<"\tDATA\n";
+    std::cout <<"1)Population size\n2)Mutation chance\n3)Exit\n";
+    while(decision<1 || decision>3){
+        std::cout <<"\nDecision: ";
+        std::cin >>decision;
+    }
+    if(decision!=3){
+        while(value<0){
+            std::cout <<"\nValue: ";
+            std::cin >>value;
         }
     }
+    if(decision==1){
+        std::cout <<decision<<"\n";
+        population_size=value;
+    }else if(decision==2){
+        std::cout <<decision<<"\n";
+        mutation_chance=value;
+    }else if(decision==3){
+        start_menu();
+    }
+    set_data();
 }
 
 
 void start(){
+    bool permission=true;
     if(forming_str==nullptr){
         std::cout <<"Choose forming algorithm!\n";
-        return;
+        permission=false;
     }
     if(selection_str==nullptr){
         std::cout <<"Choose selection strategy!\n";
-        return;
+        permission=false;
     }
     if(mutation_str==nullptr){
         std::cout <<"Choose mutation algorithm!\n";
-        return;
+        permission=false;
     }
     if(reproductive_str==nullptr){
         std::cout <<"Choose reproduction strategy!\n";
-        return;
+        permission=false;
     }
     if(crossover_str==nullptr){
         std::cout <<"Choose crossover algorithm!\n";
-        return;
+        permission=false;
     }
     if(end_cond==nullptr){
         std::cout <<"Choose ending condition!\n";
-        return;
+        permission=false;
+    }
+    if(!permission){
+    configure();
     }
     auto pool=(*forming_str)(genotype_size,population_size,adapt_func);
     auto algorithm=algorithm_configuration<crossover<int,Adaptation_func>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,Comparator>,end_condition<int>>(
         crossover_str,mutation_str,reproductive_str,selection_str,end_cond
     );
     algorithm(pool,adapt_func,compare_func,mutation_chance);
+    (*end_cond).reset();
+    start_menu();
 }
 
 void configure(){
     int decision=-1;
-    while(decision!=7){
-        std::cout <<"\tConfiguration\n";
-        std::cout <<"1)Start population forming method\n2)Selection strategy\n3)Mutation algorithm\n4)Reproduction strategy\n5)Crossover algorithm\n6)End condition\n7)Menu\n";
-        while(decision<1 && decision>7){
-            std::cout <<"\nDecision: ";
-            std::cin >>decision;
-        }
-        switch(decision){
-            case 1 : set_option(forming_strategies_names,forming_strategies,forming_str);
-            case 2 : set_option(selection_strategies_names,selection_strategies,selection_str);
-            case 3 : set_option(mutation_strategies_names,mutation_strategies,mutation_str);
-            case 3 : set_option(reproductive_strategies_names,reproductive_strategies,reproductive_str);
-            case 3 : set_option(crossover_strategies_names,crossover_strategies,crossover_str);
-            case 3 : set_option(end_conditions_names,end_conditions,end_cond);
-            case 7 : return;
-        }
+    std::cout <<"\tConfiguration\n";
+    std::cout <<"1)Start population forming method\n2)Selection strategy\n3)Mutation algorithm\n4)Reproduction strategy\n5)Crossover algorithm\n6)End condition\n7)Menu\n";
+    while(decision<1 || decision>7){
+        std::cout <<"\nDecision: ";
+        std::cin >>decision;
     }
+    if(decision==1){
+        forming_str=set_option(forming_strategies_names,forming_strategies);
+    }else if(decision==2){
+        selection_str=set_option(selection_strategies_names,selection_strategies);
+    }else if(decision==3){
+        mutation_str=set_option(mutation_strategies_names,mutation_strategies);
+    }else if(decision==4){
+        reproductive_str=set_option(reproductive_strategies_names,reproductive_strategies);
+    }else if(decision==5){
+        crossover_str=set_option(crossover_strategies_names,crossover_strategies);
+    }else if(decision==6){
+        end_cond=set_option(end_conditions_names,end_conditions);
+    }else if(decision==7){
+        start_menu();
+    }
+    configure();
 }
 
 template<typename Option>
-void set_option(const std::vector<string>& option_names, std::vector<Option*> option_list, Option* target){
+Option* set_option(const std::vector<std::string>& option_names, std::vector<Option*> option_list){
     int decision=-1;
     for(int i=0;i<option_names.size();i++){
         std::cout <<i+1<<") "<<option_names[i]<<"\n";
     }
-    while(decision<1 && decision>option_names.size()){
+    while(decision<1 || decision>option_names.size()){
         std::cout <<"\nDecision: ";
         std::cin >>decision;
     }
-    target=option_list[decision-1];
+    return option_list[decision-1];
 }
 
-std::vector<std::string> forming_strategies_names;
-std::vector<std::string> selection_strategies_names;
-std::vector<std::string> mutation_strategies_names;
-std::vector<std::string> reproductive_strategies_names;
-std::vector<std::string> crossover_strategies_names;
-std::vector<std::string> end_conditions_names;
+std::vector<std::string> forming_strategies_names{"Random"};
+std::vector<std::string> selection_strategies_names{"Proportial","Beta tournament"};
+std::vector<std::string> mutation_strategies_names{"Point ordered", "Saltation"};
+std::vector<std::string> reproductive_strategies_names{"Positive assotiative", "Negative assotiative"};
+std::vector<std::string> crossover_strategies_names{"Double point"};
+std::vector<std::string> end_conditions_names{"Max generation"};
 
 std::vector<forming_algorithm<Adaptation_func>*> forming_strategies;
 std::vector<selection_strategy<int,Comparator>*> selection_strategies;
 std::vector<mutation<int>*> mutation_strategies;
 std::vector<reproductive_strategy<int>*> reproductive_strategies;
-std::vector<crossover<int,decltype(Adaptation_func)>*> crossover_strategies;
+std::vector<crossover<int,Adaptation_func>*> crossover_strategies;
 std::vector<end_condition<int>*> end_conditions;
 
 forming_algorithm<Adaptation_func>* forming_str=nullptr;
 selection_strategy<int,Comparator>* selection_str=nullptr;
 mutation<int>* mutation_str=nullptr;
 reproductive_strategy<int>* reproductive_str=nullptr;
-crossover<int,decltype(Adaptation_func)>* crossover_str=nullptr;
+crossover<int,Adaptation_func>* crossover_str=nullptr;
 end_condition<int>* end_cond=nullptr;
 
 std::size_t genotype_size;
