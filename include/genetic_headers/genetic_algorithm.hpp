@@ -13,7 +13,7 @@ algorithm_configuration(Crossover* cross_f, Mutation* mut_f, Reproduction* repro
 template<typename T, typename Adapt_func, typename Comparator> 
 std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const Adapt_func& func, const Comparator& decider, long mutation_chance){
     long mutation_roll;
-    int generation=1;
+    int generation=0;
     std::vector<std::pair<std::shared_ptr<individual<T>>,std::shared_ptr<individual<T>>>> parents;
     std::vector<std::shared_ptr<individual<T>>> current_generation=population;
     std::vector<std::shared_ptr<individual<T>>> next_generation;
@@ -57,6 +57,7 @@ std::shared_ptr<individual<T>> operator()(const std::vector<std::shared_ptr<indi
     std::cout <<"\n\n\tFinal result: ";
     print_key(*best_individ);
     std::cout <<" ("<<best_individ->adapt()<<")\n";
+    std::cout <<"Generation: "<<generation<<"\n";
     return best_individ;
 }
 

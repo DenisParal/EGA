@@ -12,8 +12,8 @@ crossover_strategies(cros_str), end_conditions(end_cond), adapt_func(adapt_func)
 void start_menu(){
     int decision=-1;
     std::cout <<"\tMENU\n";
-    std::cout <<"1)Configure\n2)Set data\n3)Start algorithm\n4)Exit\n";
-    while(decision<1 || decision>4){
+    std::cout <<"1)Configure\n2)Set data\n3)Start algorithm\n4)Generate start population\n5)Exit\n";
+    while(decision<1 || decision>5){
         std::cout <<"\nDecision: ";
         std::cin >>decision;
     }
@@ -21,7 +21,8 @@ void start_menu(){
         case 1: configure();
         case 2: set_data();
         case 3: start();
-        case 4: exit(1);
+        case 4: generate_start_population();
+        case 5: exit(1);
     }
 }
 private:
@@ -29,29 +30,46 @@ void set_data(){
     int decision=-1;
     int value=-1;
     std::cout <<"\tDATA\n";
-    std::cout <<"1)Population size\n2)Mutation chance\n3)Exit\n";
-    while(decision<1 || decision>3){
+    std::cout <<"1)Population size\n2)Mutation chance\n3)End condition data\n4)Exit\n";
+    while(decision<1 || decision>4){
         std::cout <<"\nDecision: ";
         std::cin >>decision;
     }
-    if(decision!=3){
+    if(decision!=4){
         while(value<0){
             std::cout <<"\nValue: ";
             std::cin >>value;
         }
     }
     if(decision==1){
-        std::cout <<decision<<"\n";
         population_size=value;
     }else if(decision==2){
-        std::cout <<decision<<"\n";
         mutation_chance=value;
     }else if(decision==3){
+        if(end_cond==nullptr){
+            std::cout <<"Choose end condition!\n";
+            set_data();
+        }
+        end_cond->set_data(value);
+    }else if(decision==4){
         start_menu();
     }
     set_data();
 }
 
+void generate_start_population(){
+    if(forming_str==nullptr){
+        std::cout <<"Choose forming strategy!\n";
+        start_menu();
+    }
+    pool=(*forming_str)(genotype_size,population_size,adapt_func);
+    for(std::size_t i=0;i<pool.size();i++){
+            std::cout <<i+1<<") ";
+            print_key(*(pool[i]));
+            std::cout <<" ("<<pool[i]->adapt()<<")\n";
+    }
+    start_menu();
+}
 
 void start(){
     bool permission=true;
@@ -79,14 +97,12 @@ void start(){
         std::cout <<"Choose ending condition!\n";
         permission=false;
     }
+    if(pool.size()==0){
+        std::cout <<"Generate start population!\n";
+        permission=false;
+    }
     if(!permission){
     configure();
-    }
-    auto pool=(*forming_str)(genotype_size,population_size,adapt_func);
-    for(std::size_t i=0;i<pool.size();i++){
-            std::cout <<i+1<<") ";
-            print_key(*(pool[i]));
-            std::cout <<" ("<<pool[i]->adapt()<<")\n";
     }
     auto algorithm=algorithm_configuration<crossover<int,Adaptation_func>,mutation<int>,reproductive_strategy<int>,selection_strategy<int,Comparator>,end_condition<int>>(
         crossover_str,mutation_str,reproductive_str,selection_str,end_cond
@@ -140,7 +156,7 @@ std::vector<std::string> selection_strategies_names{"Proportial","Beta tournamen
 std::vector<std::string> mutation_strategies_names{"Point ordered", "Saltation"};
 std::vector<std::string> reproductive_strategies_names{"Positive assotiative", "Negative assotiative", "Inbreeding"};
 std::vector<std::string> crossover_strategies_names{"Double point","Classic"};
-std::vector<std::string> end_conditions_names{"Max generation","Average adaptation"};
+std::vector<std::string> end_conditions_names{"Max generation","Average adaptation","Max adaptation"};
 
 std::vector<forming_algorithm<Adaptation_func>*> forming_strategies;
 std::vector<selection_strategy<int,Comparator>*> selection_strategies;
@@ -161,4 +177,6 @@ std::size_t mutation_chance;
 const Adaptation_func& adapt_func;
 const Comparator& compare_func;
 std::size_t population_size=0;
+
+std::vector<std::shared_ptr<individual<int>>> pool;
 };

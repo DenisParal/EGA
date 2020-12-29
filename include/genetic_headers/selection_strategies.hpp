@@ -15,6 +15,7 @@ std::vector<std::shared_ptr<individual<T>>> operator()(std::vector<std::shared_p
     std::vector<std::shared_ptr<individual<T>>> result_gen;
 
     std::size_t new_gen_size=(old_gen.size()*percentage)/100;
+    new_gen_size=std::min(new_gen_size,new_gen.size());
     std::size_t old_gen_size=old_gen.size()-new_gen_size;
 
     std::size_t sum_old_adapt_value=0;

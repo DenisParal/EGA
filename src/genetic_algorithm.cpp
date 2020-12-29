@@ -67,7 +67,7 @@ int main(){
     };
 
 
-    std::vector<int> positions{1,4};
+    std::vector<int> positions{3,7};
 
 std::vector<forming_algorithm<decltype(dist_func)>*> forming_strategies;
 std::vector<selection_strategy<int,decltype(decider)>*> selection_strategies;
@@ -94,6 +94,7 @@ crossover_strategies.push_back(new classic_crossover<int,decltype(dist_func)>())
 
 end_conditions.push_back(new max_generation_cond<int>(50));
 end_conditions.push_back(new average_adaptation_cond_reversed<int>(10));
+end_conditions.push_back(new min_adaptation_cond<int>(10));
 
 
 

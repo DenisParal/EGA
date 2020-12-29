@@ -6,6 +6,7 @@ class end_condition{
 public:
     virtual bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::shared_ptr<individual<T>>&)=0;
     virtual void reset()=0;
+    virtual void set_data(int data)=0;
 };
 
 template<typename T>
@@ -20,16 +21,19 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>&, const std::s
     return false;
 }
 void reset(){
-    generation_number=0;
+    generation_number=1;
+}
+void set_data(int data){
+    max_generation_number=data;
 }
 int max_generation_number;
-int generation_number=0;
+int generation_number=1;
 };
 
 template<typename T>
 class max_adaptation_cond : public end_condition<T>{
 public:
-max_adaptation_cond(int max_stagnation_duration, long start_value):last_adapt_maximum(start_value),max_stagnation_duration(max_stagnation_duration){}
+max_adaptation_cond(int max_stagnation_duration):max_stagnation_duration(max_stagnation_duration){}
 bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, const std::shared_ptr<individual<T>>& best_individ){
     if(last_adapt_maximum==-1){
         last_adapt_maximum=best_individ->adapt();
@@ -51,6 +55,9 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
 void reset(){
     stagnation_duration=0;
     last_adapt_maximum=-1;
+}
+void set_data(int data){
+    max_stagnation_duration=data;
 }
 long last_adapt_maximum;
 int max_stagnation_duration;
@@ -82,6 +89,9 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
 void reset(){
     stagnation_duration=0;
     last_adapt_minimum=-1;
+}
+void set_data(int data){
+    max_stagnation_duration=data;
 }
 long last_adapt_minimum=-1;
 int max_stagnation_duration;
@@ -119,6 +129,9 @@ void reset(){
     stagnation_duration=0;
     last_average_adapt=-1;
 }
+void set_data(int data){
+    max_stagnation_duration=data;
+}
 long last_average_adapt;
 int max_stagnation_duration;
 int stagnation_duration=0;
@@ -152,6 +165,9 @@ bool operator()(const std::vector<std::shared_ptr<individual<T>>>& population, c
 void reset(){
     stagnation_duration=0;
     last_average_adapt=-1;
+}
+void set_data(int data){
+    max_stagnation_duration=data;
 }
 long last_average_adapt;
 int max_stagnation_duration;
